@@ -19,7 +19,7 @@ object WordCount {
     val env: ExecutionEnvironment = ExecutionEnvironment.getExecutionEnvironment
 
     // 从文件中读取数据
-    val inputFilePath: String = "D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\data.txt"
+    val inputFilePath: String = "D:\\code\\FlinkTutorial_1.10\\src\\main\\resources\\sensor.txt"
     val inputDataSet: DataSet[String] = env.readTextFile(inputFilePath)
 
     // 对 DataSet进行转换操作
