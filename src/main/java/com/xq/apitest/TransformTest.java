@@ -1,7 +1,6 @@
 package com.xq.apitest;
 
 import com.xq.apitest.pojo.SensorReading1;
-import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
