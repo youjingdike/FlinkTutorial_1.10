@@ -38,7 +38,7 @@ object SourceTest {
 //    val stream = env.fromElements(1, 0.435, "hello", ("word", 1))
 
     // 2. 从文件读取数据
-    val stream2: DataStream[String] = env.readTextFile("D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt")
+    val stream2: DataStream[String] = env.readTextFile("D:\\code\\FlinkTutorial_1.10\\src\\main\\resources\\sensor.txt")
 
     // 3. 从kafka里读取数据
     // 先创建kafka的相关配置
