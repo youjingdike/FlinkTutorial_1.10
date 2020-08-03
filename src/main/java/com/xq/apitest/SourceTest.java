@@ -1,13 +1,9 @@
 package com.xq.apitest;
 
-import com.atguigu.apitest.MySensorSource;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -72,6 +68,9 @@ class SensorReading {
     private String id;
     private Long timestamp;
     private Double temperature;
+
+    public SensorReading() {
+    }
 
     public SensorReading(String id, Long timestamp, Double temperature) {
         this.id = id;
