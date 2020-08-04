@@ -1,14 +1,14 @@
 package com.xq.apitest.pojo;
 
-public class SensorReading1 {
+public class SensorReading {
     private String id;
     private Long timestamp;
     private Double temperature;
 
-    public SensorReading1() {
+    public SensorReading() {
     }
 
-    public SensorReading1(String id, Long timestamp, Double temperature) {
+    public SensorReading(String id, Long timestamp, Double temperature) {
         this.id = id;
         this.timestamp = timestamp;
         this.temperature = temperature;

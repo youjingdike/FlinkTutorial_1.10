@@ -1,6 +1,6 @@
 package com.xq.apitest;
 
-import com.xq.apitest.pojo.SensorReading1;
+import com.xq.apitest.pojo.SensorReading;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.functions.KeySelector;
@@ -26,27 +26,27 @@ public class TransformTest {
         DataStreamSource<String> inputStream = env.readTextFile("D:\\code\\FlinkTutorial_1.10\\src\\main\\resources\\sensor.txt");
 
         // 1. 基本转换操作：map成样例类类型
-        SingleOutputStreamOperator<SensorReading1> dataStream = inputStream.map((MapFunction<String, SensorReading1>) value -> {
+        SingleOutputStreamOperator<SensorReading> dataStream = inputStream.map((MapFunction<String, SensorReading>) value -> {
             String[] split = value.split(",");
-            return new SensorReading1(split[0].trim(), Long.parseLong(split[1].trim()), Double.parseDouble(split[2].trim()));
+            return new SensorReading(split[0].trim(), Long.parseLong(split[1].trim()), Double.parseDouble(split[2].trim()));
         });
         // 2. 聚合操作，首先按照id做分组，然后取当前id的最小温度
-        SingleOutputStreamOperator<SensorReading1> minby = dataStream.keyBy((KeySelector<SensorReading1, String>) value -> value.getId())
+        SingleOutputStreamOperator<SensorReading> minby = dataStream.keyBy((KeySelector<SensorReading, String>) value -> value.getId())
                 .minBy("temperature");
 
         // 3. 复杂聚合操作，reduce，得到当前id最小的温度值，以及最新的时间戳+1
         //如果是某个key的第一条数据，不执行该方法
-        SingleOutputStreamOperator<SensorReading1> reduce = dataStream.keyBy("id")
-                .reduce((ReduceFunction<SensorReading1>) (cur, newData) -> {
+        SingleOutputStreamOperator<SensorReading> reduce = dataStream.keyBy("id")
+                .reduce((ReduceFunction<SensorReading>) (cur, newData) -> {
 //                    System.out.println("cur:"+cur);
 //                    System.out.println("new:"+newData);
-                    return new SensorReading1(cur.getId(), newData.getTimestamp() + 1, Math.min(cur.getTemperature(), newData.getTemperature()));
+                    return new SensorReading(cur.getId(), newData.getTimestamp() + 1, Math.min(cur.getTemperature(), newData.getTemperature()));
                 });
 
         // 4. 分流操作，split/select，以30度为界划分高低温流
-        SplitStream<SensorReading1> splitStream = dataStream.split(new OutputSelector<SensorReading1>() {
+        SplitStream<SensorReading> splitStream = dataStream.split(new OutputSelector<SensorReading>() {
             @Override
-            public Iterable<String> select(SensorReading1 value) {
+            public Iterable<String> select(SensorReading value) {
                 List<String> output = new ArrayList<String>();
                 if (value.getTemperature() > 30) {
                     output.add("high");
@@ -56,27 +56,27 @@ public class TransformTest {
                 return output;
             }
         });
-        DataStream<SensorReading1> highStream = splitStream.select("high");
-        DataStream<SensorReading1> lowStream = splitStream.select("low");
-        DataStream<SensorReading1> allStream = splitStream.select("high", "low");
+        DataStream<SensorReading> highStream = splitStream.select("high");
+        DataStream<SensorReading> lowStream = splitStream.select("low");
+        DataStream<SensorReading> allStream = splitStream.select("high", "low");
 
         // 5. 合流操作，connect/comap
-        SingleOutputStreamOperator<Tuple2<String, Double>> highWarningStream = highStream.map(new MapFunction<SensorReading1, Tuple2<String, Double>>() {
+        SingleOutputStreamOperator<Tuple2<String, Double>> highWarningStream = highStream.map(new MapFunction<SensorReading, Tuple2<String, Double>>() {
             @Override
-            public Tuple2<String, Double> map(SensorReading1 value) throws Exception {
+            public Tuple2<String, Double> map(SensorReading value) throws Exception {
                 return new Tuple2<>(value.getId(), value.getTemperature());
             }
         });
 
-        ConnectedStreams<Tuple2<String, Double>, SensorReading1> connectedStream = highWarningStream.connect(lowStream);
-        SingleOutputStreamOperator<Tuple3<String, Double, String>> coMapStream = connectedStream.map(new CoMapFunction<Tuple2<String, Double>, SensorReading1, Tuple3<String, Double, String>>() {
+        ConnectedStreams<Tuple2<String, Double>, SensorReading> connectedStream = highWarningStream.connect(lowStream);
+        SingleOutputStreamOperator<Tuple3<String, Double, String>> coMapStream = connectedStream.map(new CoMapFunction<Tuple2<String, Double>, SensorReading, Tuple3<String, Double, String>>() {
             @Override
             public Tuple3<String, Double, String> map1(Tuple2<String, Double> value) throws Exception {
                 return new Tuple3<>(value.f0, value.f1, "warning");
             }
 
             @Override
-            public Tuple3<String, Double, String> map2(SensorReading1 value) throws Exception {
+            public Tuple3<String, Double, String> map2(SensorReading value) throws Exception {
                 return new Tuple3<>(value.getId(), value.getTemperature(), "normal");
             }
         });
@@ -84,7 +84,7 @@ public class TransformTest {
         * 1． Union 之前两个流的类型必须是一样， Connect 可以不一样，在之后的 coMap中再去调整成为一样的。
         * 2. Connect 只能操作两个流， Union 可以操作多个。
         */
-        DataStream<SensorReading1> unionStream = highStream.union(lowStream);
+        DataStream<SensorReading> unionStream = highStream.union(lowStream);
 //        minby.print("minby");
 //        reduce.print("reduce");
         /*highStream.print("high");
