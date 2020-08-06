@@ -24,7 +24,7 @@ object FsOutputTest {
     val tableEnv = StreamTableEnvironment.create(env)
 
     // 2. 读取数据转换成流，map成样例类
-    val filePath: String = "D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt"
+    val filePath: String = "D:\\code\\FlinkTutorial_1.10\\src\\main\\resources\\sensor.txt"
     val inputStream: DataStream[String] = env.readTextFile(filePath)
     // map成样例类类型
     val dataStream: DataStream[SensorReading] = inputStream

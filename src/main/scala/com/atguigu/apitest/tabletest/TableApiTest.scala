@@ -49,7 +49,7 @@ object TableApiTest {
 
     // 2. 连接外部系统，读取数据
     // 2.1 读取文件数据
-    val filePath = "D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt"
+    val filePath = "D:\\code\\FlinkTutorial_1.10\\src\\main\\resources\\sensor.txt"
 
     tableEnv.connect(new FileSystem().path(filePath))
       .withFormat(new OldCsv()) // 定义从外部文件读取数据之后的格式化方法

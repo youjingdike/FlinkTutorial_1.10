@@ -20,7 +20,7 @@ object Example {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     env.setParallelism(1)
     // 从文件读取数据
-    val inputStream: DataStream[String] = env.readTextFile("D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt")
+    val inputStream: DataStream[String] = env.readTextFile("D:\\code\\FlinkTutorial_1.10\\src\\main\\resources\\sensor.txt")
 //    val inputStream: DataStream[String] = env.socketTextStream("localhost", 7777)
 
     // map成样例类类型
