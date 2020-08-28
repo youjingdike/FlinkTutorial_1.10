@@ -60,7 +60,6 @@ public class TransformTest {
         DataStream<SensorReading> lowStream = splitStream.select("low");
         DataStream<SensorReading> allStream = splitStream.select("high", "low");
 
-        // 5. 合流操作，connect/comap
         SingleOutputStreamOperator<Tuple2<String, Double>> highWarningStream = highStream.map(new MapFunction<SensorReading, Tuple2<String, Double>>() {
             @Override
             public Tuple2<String, Double> map(SensorReading value) throws Exception {
@@ -68,6 +67,7 @@ public class TransformTest {
             }
         });
 
+        // 5. 合流操作，connect/comap
         ConnectedStreams<Tuple2<String, Double>, SensorReading> connectedStream = highWarningStream.connect(lowStream);
         SingleOutputStreamOperator<Tuple3<String, Double, String>> coMapStream = connectedStream.map(new CoMapFunction<Tuple2<String, Double>, SensorReading, Tuple3<String, Double, String>>() {
             @Override
