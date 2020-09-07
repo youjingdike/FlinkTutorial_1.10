@@ -24,9 +24,9 @@ object WindowTest {
     env.getConfig.setAutoWatermarkInterval(100L)
 
     // 从文件读取数据
-//    val inputStream: DataStream[String] = env.readTextFile("D:\\code\\FlinkTutorial_1.10\\src\\main\\resources\\sensor.txt")
+    val inputStream: DataStream[String] = env.readTextFile("D:\\code\\FlinkTutorial_1.10\\src\\main\\resources\\sensor.txt")
 
-    val inputStream: DataStream[String] = env.socketTextStream("localhost", 7777)
+//    val inputStream: DataStream[String] = env.socketTextStream("localhost", 7777)
 
     // map成样例类类型
     val dataStream: DataStream[SensorReading] = inputStream
@@ -40,7 +40,8 @@ object WindowTest {
       } )
 
     // 开窗统计，统计每个传感器每15秒中的温度最小值
-    val resultStream: DataStream[SensorReading] = dataStream
+//    val resultStream: DataStream[SensorReading] = dataStream
+    val resultStream: DataStream[Double] = dataStream
       .keyBy("id")
       //     .window( SlidingProcessingTimeWindows.of(Time.hours(1), Time.seconds(10)) )
       //     .countWindow( 10, 2 )
@@ -48,8 +49,8 @@ object WindowTest {
       .timeWindow(Time.seconds(15))
         .allowedLateness(Time.minutes(1))
         .sideOutputLateData(new OutputTag[SensorReading]("late"))
-      .reduce( new MyReduceFunc() )
-//      .aggregate( new MyAggFunc() )
+//      .reduce( new MyReduceFunc() )
+      .aggregate( new MyAggFunc() )
 
     dataStream.print("data")
     resultStream.print("result")

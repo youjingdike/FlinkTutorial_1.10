@@ -9,6 +9,7 @@ import org.apache.flink.streaming.connectors.elasticsearch.{ElasticsearchSinkFun
 import org.apache.flink.streaming.connectors.elasticsearch6.ElasticsearchSink
 import org.apache.http.HttpHost
 import org.elasticsearch.client.Requests
+import org.elasticsearch.index.VersionType
 
 /**
   * Copyright (c) 2018-2028 尚硅谷 All Rights Reserved 
@@ -50,6 +51,8 @@ object esSinkTest {
         val indexRequest = Requests.indexRequest()
           .index("sensor")
           .`type`("data")
+          //可以设置版本类型与版本
+          .versionType(VersionType.EXTERNAL).version(234234L)
           .source(dataSource)
 
         // 使用RequestIndexer发送http请求
